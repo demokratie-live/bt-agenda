@@ -101,6 +101,7 @@ class Browser {
           .trim();
 
         return {
+          dateTime: new Date(Date.parse(`${date} ${time}`)),
           time,
           agendaNumber,
           topic,
