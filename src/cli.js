@@ -18,6 +18,9 @@ process.on('SIGINT', async () => {
   process.exit(1);
 });
 
+scraper.addListener('data', data => console.log('new data', data));
+scraper.addListener('finish', data => console.log('FINISH', data));
+
 scraper
   .scrape({
     startWeek: program.week,
