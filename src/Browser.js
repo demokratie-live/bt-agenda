@@ -1,6 +1,14 @@
 const request = require('request');
 const striptags = require('striptags');
 
+// fix Date.parse
+const MONTH = [
+  { string: 'März', fix: 'March' },
+  { string: 'Mai', fix: 'May' },
+  { string: 'Oktober', fix: 'October' },
+  { string: 'Dezember', fix: 'December' },
+];
+
 class Browser {
   cookie = null;
 
@@ -58,7 +66,10 @@ class Browser {
     const tables = body.match(/(?:<caption>(.*?)<\/caption>.*?<tbody>(.*?)<\/tbody>)/gs);
     return tables.map((table) => {
       const dateMeeting = table.match(/<caption>(.*?)<\/caption>/s)[1].trim();
-      const date = dateMeeting.match(/^(.*?)\(/)[1].trim();
+      let date = dateMeeting.match(/^(.*?)\(/)[1].trim();
+      MONTH.forEach(({ string, fix }) => {
+        date = date.replace(`${string}`, `${fix}`);
+      });
       const meeting = parseInt(dateMeeting.match(/\((\d{1,3})/)[1].trim(), 10);
       const tableBody = table.match(/<tbody>(.*?)<\/tbody>/gs)[0];
       const rows = tableBody.match(/<tr>(.*?)<\/tr>/gs);

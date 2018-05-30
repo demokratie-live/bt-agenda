@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+* Fix date.parse
+
 ## 0.2.2
 
 * Add datetime to entries
