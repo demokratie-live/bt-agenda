@@ -75,19 +75,19 @@ class Browser {
         const topicDetailsBody = topicCell.match(/<p>(.*?)<\/p>/gs);
         const topicDetails = [];
         if (topicDetailsBody) {
-          let multipleDocs = topicDetailsBody[0].match(/[a-z]\)(.+?)(?:b\)|<\/p>)/s);
+          let multipleDocs = topicDetailsBody[0].match(/[a-z]\)(.+?)(?:\W[a-z]\)|<\/p>)/s);
           if (multipleDocs) {
             while (multipleDocs) {
-              const documents = multipleDocs[0].match(/\d{1,3}\/\d{1,10}/gs) || [];
+              const documents = striptags(multipleDocs[1]).match(/\d{1,3}\/\d{1,10}/gs) || [];
               topicDetails.push({
-                text: striptags(multipleDocs[0].replace(/<br\/>/g, ' ')).trim(),
+                text: striptags(multipleDocs[1].replace(/<br\/>/g, ' ')).trim(),
                 documents,
               });
-              multipleDocs.input = multipleDocs.input.substring(multipleDocs.index + 2);
-              multipleDocs = multipleDocs.input.match(/[a-z]\)(.+?)(?:b\)|<\/p>)/s);
+              multipleDocs.input = multipleDocs.input.substring(multipleDocs.index + multipleDocs[1].length);
+              multipleDocs = multipleDocs.input.match(/[a-z]\)(.+?)(?:\W[a-z]\)|<\/p>)/s);
             }
           } else {
-            const documents = topicDetailsBody[0].match(/\d{1,3}\/\d{1,10}/gs) || [];
+            const documents = striptags(topicDetailsBody[0]).match(/\d{1,3}\/\d{1,10}/gs) || [];
             topicDetails.push({
               text: striptags(topicDetailsBody[0].replace(/<br\/>/g, ' ')).trim(),
               documents,
