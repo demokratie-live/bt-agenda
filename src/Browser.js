@@ -72,11 +72,27 @@ class Browser {
         } else {
           topic = striptags(topicCell).trim();
         }
-        let topicDetails = topicCell.match(/<p>(.*?)<\/p>/gs);
-        let documents = [];
-        if (topicDetails) {
-          topicDetails = striptags(topicDetails[0]).trim();
-          documents = topicDetails.match(/\d{1,3}\/\d{1,10}/gs) || [];
+        const topicDetailsBody = topicCell.match(/<p>(.*?)<\/p>/gs);
+        const topicDetails = [];
+        if (topicDetailsBody) {
+          let multipleDocs = topicDetailsBody[0].match(/[a-z]\)(.+?)(?:b\)|<\/p>)/s);
+          if (multipleDocs) {
+            while (multipleDocs) {
+              const documents = multipleDocs[0].match(/\d{1,3}\/\d{1,10}/gs) || [];
+              topicDetails.push({
+                text: striptags(multipleDocs[0].replace(/<br\/>/g, ' ')).trim(),
+                documents,
+              });
+              multipleDocs.input = multipleDocs.input.substring(multipleDocs.index + 2);
+              multipleDocs = multipleDocs.input.match(/[a-z]\)(.+?)(?:b\)|<\/p>)/s);
+            }
+          } else {
+            const documents = topicDetailsBody[0].match(/\d{1,3}\/\d{1,10}/gs) || [];
+            topicDetails.push({
+              text: striptags(topicDetailsBody[0].replace(/<br\/>/g, ' ')).trim(),
+              documents,
+            });
+          }
         }
 
         const status = striptags(row.match(/<td data-th="Status\/ Abstimmung">(.*?)<\/td>/gs)[0])
@@ -89,7 +105,6 @@ class Browser {
           agendaNumber,
           topic,
           topicDetails,
-          documents,
           status,
         };
       });
