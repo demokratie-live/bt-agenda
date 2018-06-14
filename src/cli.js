@@ -3,6 +3,7 @@
 
 const Scraper = require('./scraper');
 const program = require('commander');
+const util = require('util');
 
 program
   .version('0.1.0')
@@ -18,8 +19,8 @@ process.on('SIGINT', async () => {
   process.exit(1);
 });
 
-scraper.addListener('data', data => console.log('new data', data));
-scraper.addListener('finish', data => console.log('FINISH', data));
+scraper.addListener('data', data => console.log('new data', util.inspect(data, false, null)));
+scraper.addListener('finish', data => console.log('FINISH', util.inspect(data, false, null)));
 
 scraper
   .scrape({

@@ -84,6 +84,12 @@ class Browser {
           topic = striptags(topicCell).trim();
         }
         const topicDetailsBody = topicCell.match(/<p>(.*?)<\/p>/gs);
+        const topicDocumentsData = topicCell.match(/<i class="icon-doc"><\/i>(\d{1,3}\/\d{1,10})<\/a>/g);
+        let topicDocuments = [];
+        if (topicDocumentsData) {
+          topicDocuments = topicDocumentsData.map(doc =>
+            doc.replace('<i class="icon-doc"></i>', '').replace('</a>', ''));
+        }
         const topicDetails = [];
         if (topicDetailsBody) {
           let multipleDocs = topicDetailsBody[0].match(/[a-z]\)(.+?)(?:\W[a-z]\)|<\/p>)/s);
@@ -117,6 +123,7 @@ class Browser {
           agendaNumber,
           topic,
           topicDetails,
+          topicDocuments,
           status,
         };
       });
