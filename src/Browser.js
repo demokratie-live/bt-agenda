@@ -111,11 +111,12 @@ class Browser {
             });
           }
         }
-
-        const status = striptags(row.match(/<td data-th="Status\/ Abstimmung">(.*?)<\/td>/gs)[0])
+        const status = striptags(row
+          .match(/<td data-th="Status\/ Abstimmung">(.*?)<\/td>/gs)[0]
           .replace('Details einblenden', '')
-          .replace('Details ausblenden', '')
-          .trim();
+          .replace('Details ausblenden', ''))
+          .split('<br>')
+          .map(res => res.trim());
 
         return {
           dateTime: new Date(Date.parse(`${date} ${time}`)),
