@@ -49,7 +49,7 @@ class Scraper {
       });
       const weekData = browser.getTables({ year: nextYear, week: nextWeek, body });
       if (this.options.onData) {
-        this.dataPromises = [...this.dataPromises, this.options.onData({ weekData })];
+        this.dataPromises = [...this.dataPromises, this.options.onData(weekData)];
       }
 
       if (
