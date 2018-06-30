@@ -1,6 +1,6 @@
 {
   "name": "@democracy-deutschland/bt-agenda",
-  "version": "0.5.0-0",
+  "version": "0.5.0-1",
   "description": "scraper for the german \"Bundestag\" (Tagesordungen)",
   "main": "distribution/scraper.js",
   "author": "Manuel Ruck",
