@@ -19,8 +19,13 @@ process.on('SIGINT', async () => {
   process.exit(1);
 });
 
-scraper.addListener('data', data => console.log('new data', util.inspect(data, false, null)));
-scraper.addListener('finish', data => console.log('FINISH', util.inspect(data, false, null)));
+const onData = async (data) => {
+  console.log('new data', util.inspect(data, false, null));
+};
+
+const onFinish = async (data) => {
+  console.log('FINISH', util.inspect(data, false, null));
+};
 
 scraper
   .scrape({
@@ -31,6 +36,8 @@ scraper
       program.continue === 'true' ||
       program.continue === 'yes' ||
       program.continue === 'y',
+    onData,
+    onFinish,
   })
   .catch((error) => {
     console.error(error);

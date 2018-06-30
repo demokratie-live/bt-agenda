@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
 /* eslint-disable no-throw-literal */
-import events from 'events';
-
 import Browser from './Browser';
 
 process.setMaxListeners(Infinity);
@@ -11,6 +9,8 @@ class Scraper {
     startYear: 2018,
     startWeek: 3,
     continue: false,
+    onData: false,
+    onFinish: false,
   };
 
   urls = {
@@ -21,7 +21,7 @@ class Scraper {
 
   browser = null;
   scrapedWeeks = [];
-  eventEmitter = new events.EventEmitter();
+  dataPromises = [];
 
   async scrape(options) {
     this.options = { ...this.options, ...options };
@@ -31,7 +31,10 @@ class Scraper {
     this.browser = await this.createNewBrowser();
 
     await this.analyseWeeks({ year: this.options.startYear, week: this.options.startWeek });
-    this.eventEmitter.emit('finish', { scrapedWeeks: this.scrapedWeeks });
+    if (this.options.onFinish) {
+      await Promise.all(this.dataPromises);
+      await this.options.onFinish({ scrapedWeeks: this.scrapedWeeks });
+    }
   }
 
   analyseWeeks = async ({ year, week }) => {
@@ -45,7 +48,9 @@ class Scraper {
         uri: this.urls.get({ year: nextYear, week: nextWeek }),
       });
       const weekData = browser.getTables({ year: nextYear, week: nextWeek, body });
-      this.eventEmitter.emit('data', weekData);
+      if (this.options.onData) {
+        this.dataPromises = [...this.dataPromises, this.options.onData({ weekData })];
+      }
 
       if (
         !this.scrapedWeeks.find(({ week: scrapedWeek, year: scrapedYear }) =>
@@ -74,10 +79,6 @@ class Scraper {
       scraped: 0,
       errors: 0,
     };
-  };
-
-  addListener = (type, callback) => {
-    this.eventEmitter.on(type, callback);
   };
 }
 
