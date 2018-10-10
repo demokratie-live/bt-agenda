@@ -84,12 +84,29 @@ class Browser {
           topic = striptags(topicCell).trim();
         }
         const topicDetailsBody = topicCell.match(/<p>(.*?)<\/p>/gs);
-        const topicDocumentsData = topicCell.match(/<i class="icon-doc"><\/i>(\d{1,3}\/\d{1,10})<\/a>/g);
-        let topicDocuments = [];
-        if (topicDocumentsData) {
-          topicDocuments = topicDocumentsData.map(doc =>
-            doc.replace('<i class="icon-doc"></i>', '').replace('</a>', ''));
+
+        const topicDocuments = [];
+        const documentRow = topicCell.match(/<a.*?href="(.*?)".*?<i class="icon-doc"><\/i>(\d{1,3}\/\d{1,10})<\/a>.*?(?:,|<br\/>)/gm);
+        if (documentRow) {
+          documentRow.forEach((docRow) => {
+            const docData = {
+              docNr: null,
+              chars: [],
+            };
+            const topicDocumentsData = docRow.match(/<i class="icon-doc"><\/i>(\d{1,3}\/\d{1,10})<\/a>/g);
+
+            if (topicDocumentsData) {
+              docData.docNr = topicDocumentsData[0].replace('<i class="icon-doc"></i>', '').replace('</a>', '');
+            }
+            const charMatch = docRow.match(/Buchstabe (\w)/gm);
+            if (charMatch) {
+              docData.chars = charMatch.map(char => char.replace('Buchstabe ', ''));
+            }
+
+            topicDocuments.push(docData);
+          });
         }
+
         const topicDetails = [];
         if (topicDetailsBody) {
           let multipleDocs = topicDetailsBody[0].match(/[a-z]\)(.+?)(?:\W[a-z]\)|<\/p>)/s);
